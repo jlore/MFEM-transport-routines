@@ -3,7 +3,7 @@ clearvars;
 get_values = '/home/jjl/MFEM/mfem/miniapps/tools/get-values';
 NP = 10;
 
-root_dir = '/home/jjl/MFEM/mfem/miniapps/plasma/dt_e-8';
+root_dir = '/home/jjl/MFEM/mfem/miniapps/plasma/dt_e-3_ft_100_test';
 prefix = 'Transport2D-Parallel';
 
 dir_data = dir(root_dir);
@@ -103,7 +103,7 @@ set(gca,'yscale','log')
 
 %% Call get-values
 npoints_want = 100;
-Xwant = linspace(0.39,0.65,npoints_want);
+Xwant = linspace(0.4,0.64,npoints_want);
 Ywant = 0.*Xwant;
 infilename = 'points.in';
 fid = fopen(fullfile(root_dir,infilename),'w');
@@ -127,7 +127,7 @@ for i = 0:nt - 1
     
     %% parse output
     % fields: [ B Poloidal, B Toroidal, Electron Temperature, Ion Density, Ion Parallel Velocity, Ion Temperature, Neutral Density, n_e Chi_e Parallel, n_e Chi_e Perpendicular ]
-    data = dlmread(fullfile(root_dir,outfilename),'',1,0);
+    data = dlmread(fullfile(root_dir,outfilename),'',7,0);
     npoints = size(data,1);
     X(:,i+1) = data(:,2);
     Y(:,i+1) = data(:,3);
@@ -157,13 +157,14 @@ set(gcf,'color','w')
 set(gca,'fontsize',FS)
 
 
-ind = find(X>0.6,1,'first');
+ind = find(X>=0.6,1,'first');
+
 
 figure; hold on; box on; grid on;
 plot(time,Te(ind,:),'o-','linew',LW)
 xlabel('time (s)','fontsize',FS)
 ylabel('T_e (eV)','fontsize',FS)
-title('T_e vs t at X = 0.6, Y = 0')
+title(sprintf('T_e vs t at X = %.2f, Y = 0',X(ind)))
 set(gcf,'color','w')
 set(gca,'fontsize',FS)
 
