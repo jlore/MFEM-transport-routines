@@ -3,7 +3,7 @@ clearvars;
 %% Domain and geometry
 geo.a = 0.4;
 geo.b = 0.64;
-nr = 405;
+nr = 50;
 r = linspace(geo.a,geo.b,nr);
 
 R0 = 3.9;
@@ -33,7 +33,7 @@ plasma.Erc = Erc;
 %% 
 ntime = 40;
 t0 = 0;
-t1 = .5;
+t1 = 1;
 time = linspace(t0,t1,ntime);
 
 %% get analytic solution
@@ -50,24 +50,26 @@ legend('analytic','IC')
 
 m = 1;
 options = optimset;
-% options = odeset('RelTol',1e-9,'AbsTol',1e-11);
 sol = pdepe(m,@pdefun,@icfun,@bcfun,r,time,options,geo,plasma,T_analytic);
 
 Tsol = sol(:,:,1);
 
-plot(r,Tsol(:,:))
+% plot(r,Tsol(:,:))
 plot(r,Tsol(end,:),'o')
-% legend('analytic','IC','SOL')
+legend('analytic','IC','Sol at t1')
 
 figure; hold on; box on; grid on;
 ieval = floor(nr/2);
 plot(time,Tsol(:,ieval))
+title('Evolution at grid midpoint')
 xlabel('t (s)')
 ylabel('T (eV)')
 
 figure; hold on; box on; grid on;
 plot(r,abs(Tsol(end,:)-T_analytic))
 set(gca,'yscale','log')
+title('T(t1) - T_{analytic}')
+xlabel('r (m)')
 
 
 figure;
@@ -84,12 +86,20 @@ function [c,f,s] = pdefun(r,t,T,dTdr,geo,plasma,T_analytic)
 end
 
 function T0 = icfun(r,geo,plasma,T_analytic)
-% Ta = T_analytic(1);
-% Tb = T_analytic(end);
-% T0 = Ta - (Ta-Tb)*(r-geo.a)/(geo.b-geo.a);
+Tmax = 500;
+Tmin = 5;
+Te_exp = 0;
 
-T0 = 100*sin(r*pi);
+rnorm = (r-geo.a)/(geo.b-geo.a);
 
+% Tmin = T_analytic(1);
+% Tmax = T_analytic(end);
+% T0 = Tmax - (Tmax-Tmin)*rnorm;
+
+% T0 = 100*sin(r*pi);
+
+rs = (r - 0.5*(geo.a + geo.b)).^2;
+T0 = Tmin + (Tmax - Tmin)*(0.5 + 0.5*cos(pi*rnorm)) + 0.5*Te_exp*exp(-400*rs);
 end
 
 
