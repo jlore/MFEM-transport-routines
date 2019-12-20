@@ -113,7 +113,7 @@ M = amu*plasma.mi_amu;
 
 pr = plasma.density*geo.beta*sqrt(2*e*Tr/M)*(plasma.gamma*Tr + plasma.Erc)*e;
 % pr = plasma.density*geo.beta*sqrt(e*2/M)*plasma.gamma*Tr^1.5*e;
-qr = e; 
+qr = e;     
 
 end
 
